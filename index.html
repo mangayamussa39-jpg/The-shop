@@ -905,7 +905,7 @@
                 pagWrapper.innerHTML = `
                     <button class="page-item page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(-1)"><span class="material-icons" style="font-size:18px; margin-right:4px;">chevron_left</span> Prev</button>
                     <div class="page-item page-info">
-                        Page <input type="number" id="page-jump-input" class="page-num-input" min="1" max="${totalPages}" value="${currentPage}" onchange="jumpToPage(this.value, ${totalPages})" onkeyup="if(event.key==='Enter') jumpToPage(this.value, ${totalPages})"> / ${totalPages}
+                        Page <input type="number" id="page-jump-input" class="page-num-input" min="1" max="${totalPages}" value="${currentPage}" onchange="jumpToPage(this.value, ${totalPages})" onkeyup="if(event.key==='Enter') jumpToPage(this.value, ${totalPages})"> ${totalPages}
                     </div>
                     <button class="page-item page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(1)">Next <span class="material-icons" style="font-size:18px; margin-left:4px;">chevron_right</span></button>
                 `;
