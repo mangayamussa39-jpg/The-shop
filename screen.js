@@ -1,35 +1,40 @@
 function updateViewport() {
-    // Use screen width/height, NOT innerWidth, to avoid loops
-    const screenWidth = window.screen.width;
-    const screenHeight = window.screen.height;
+    // Use screen width to prevent the resize glitch loop
+    const screenW = window.screen.width;
+    const screenH = window.screen.height;
     
-    const isLandscape = screenWidth > screenHeight;
-    const isDesktop = screenWidth >= 1024;
+    const isLandscape = screenW > screenH;
+    const isDesktop = Math.max(screenW, screenH) >= 1024;
     
-    let viewportContent = "width=device-width, initial-scale=1";
+    let viewportContent;
     
-    if (isDesktop) {
-        // Desktop usually ignores the viewport tag anyway, but just in case
-        viewportContent = "width=1100"; 
-    } else if (!isLandscape) {
-        // Force width 550 AND force the browser to zoom out to fit it
-        const scale = screenWidth / 550;
-        viewportContent = `width=550, initial-scale=${scale}, maximum-scale=${scale}`;
+    // If it's desktop, tablet, or mobile landscape, enforce 1100px
+    if (isDesktop || isLandscape) {
+        viewportContent = "width=1100";
+    } else {
+        // Otherwise (mobile portrait), enforce 550px
+        viewportContent = "width=550";
     }
     
+    // Find or create the viewport tag
     let viewport = document.querySelector('meta[name="viewport"]');
-    if (!viewport) {
+    
+    if (viewport) {
+        // Only update if it actually needs to change (stops glitching)
+        if (viewport.getAttribute('content') !== viewportContent) {
+            viewport.setAttribute('content', viewportContent);
+        }
+    } else {
         viewport = document.createElement('meta');
         viewport.name = 'viewport';
+        viewport.content = viewportContent;
         document.head.appendChild(viewport);
-    }
-    
-    // Only update if it actually changed to prevent browser recalculation spam
-    if (viewport.content !== viewportContent) {
-        viewport.setAttribute('content', viewportContent);
     }
 }
 
-// Do NOT run on resize. Only run on load and orientation change.
-window.addEventListener('DOMContentLoaded', updateViewport);
+// Run immediately so the browser knows the size before painting
+updateViewport();
+
+// Listeners for when the user resizes or rotates their phone
+window.addEventListener('resize', updateViewport);
 window.addEventListener('orientationchange', updateViewport);
