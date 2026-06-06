@@ -17,7 +17,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    
+    <script defer src="screen.js"></script>
     <style>
         /* ==========================================================================
            VARIABLES & THEMING
@@ -654,35 +654,7 @@
     
     <!-- Toast Notification -->
     <div id="custom-toast">Action successful!</div>
-<script>
-  function updateViewport() {
-    const isLandscape = window.innerWidth > window.innerHeight;
-    const isDesktop = window.innerWidth >= 1024;
-    
-    let viewportContent = "width=device-width, initial-scale=1";
-    
-    // Only force 500px on phones in portrait mode
-    if (!isDesktop && !isLandscape) {
-      viewportContent = "width=550";
-    }
-    
-    // Update or create viewport meta tag
-    let viewport = document.querySelector('meta[name="viewport"]');
-    if (viewport) {
-      viewport.setAttribute('content', viewportContent);
-    } else {
-      viewport = document.createElement('meta');
-      viewport.name = 'viewport';
-      viewport.content = viewportContent;
-      document.head.appendChild(viewport);
-    }
-  }
-  
-  // Run on load, resize, and orientation change
-  window.addEventListener('load', updateViewport);
-  window.addEventListener('resize', updateViewport);
-  window.addEventListener('orientationchange', updateViewport);
-</script>
+
     <!-- Scripts -->
     <script>
         const PHONE_SHEET_ID = "1mcSKIs1VsZVF9Z7MSc82gln5XdF1jWJo0GYVnnxqgMk"; 
