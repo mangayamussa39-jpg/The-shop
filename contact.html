@@ -16,7 +16,7 @@
     <!-- FontAwesome (For Bakery Header/Theme) & Material Icons (For Contact JS Logic) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
+    <meta name="viewport" content="width=600">
     <style>
         /* --- CSS Variables & Reset --- */
         :root {
@@ -534,6 +534,35 @@
     <div id="custom-toast">Action failed!</div>
 
     <!-- Scripts (Functionality Preserved, Theme Logic Merged) -->
+    <script>
+  function updateViewport() {
+    const isLandscape = window.innerWidth > window.innerHeight;
+    const isDesktop = window.innerWidth >= 1024;
+    
+    let viewportContent = "width=device-width, initial-scale=1";
+    
+    // Only force 600px on phones in portrait mode
+    if (!isDesktop && !isLandscape) {
+      viewportContent = "width=600";
+    }
+    
+    // Update or create viewport meta tag
+    let viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport) {
+      viewport.setAttribute('content', viewportContent);
+    } else {
+      viewport = document.createElement('meta');
+      viewport.name = 'viewport';
+      viewport.content = viewportContent;
+      document.head.appendChild(viewport);
+    }
+  }
+  
+  // Run on load, resize, and orientation change
+  window.addEventListener('load', updateViewport);
+  window.addEventListener('resize', updateViewport);
+  window.addEventListener('orientationchange', updateViewport);
+    </script>
     <script>
         const SHEET_ID = "1eAJe9wdwsTaGgxjOV3QZHZId8Ai1hh6fMe272dQgMp8"; 
         window.fetchedEmails = []; 
