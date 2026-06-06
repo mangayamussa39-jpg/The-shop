@@ -16,7 +16,7 @@
     <!-- FontAwesome (For Bakery Header/Theme) & Material Icons (For Contact JS Logic) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <meta name="viewport" content="width=600">
+    <meta name="viewport" content="width=500">
     <style>
         /* --- CSS Variables & Reset --- */
         :root {
@@ -208,7 +208,7 @@
 
         h1.main-title {
             font-family: var(--font-display);
-            font-size: clamp(34px, 4vw, 50px);
+            font-size: 50px;
             color: var(--primary-orange);
             line-height: 0.8;
             letter-spacing: 2px;
@@ -541,9 +541,9 @@
     
     let viewportContent = "width=device-width, initial-scale=1";
     
-    // Only force 600px on phones in portrait mode
+    // Only force 500px on phones in portrait mode
     if (!isDesktop && !isLandscape) {
-      viewportContent = "width=600";
+      viewportContent = "width=500";
     }
     
     // Update or create viewport meta tag
