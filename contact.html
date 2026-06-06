@@ -369,6 +369,14 @@
             border-radius: 50%; text-decoration: none; transition: opacity 0.3s ease;
         }
         .social-icons a:hover { opacity: 0.8; }
+        
+        /* Styling for Footer SimpleIcons so they fit perfectly in the circle */
+        .social-icons a img {
+            width: 50%;
+            height: 50%;
+            object-fit: contain;
+            display: block;
+        }
 
         /* --- Modals --- */
         #modal-backdrop { position: fixed; inset: 0; z-index: 999; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); display: none; }
@@ -496,13 +504,13 @@
             <div class="footer-arrows">
                 <i class="fa-solid fa-angle-right"></i><i class="fa-solid fa-angle-right"></i><i class="fa-solid fa-angle-right"></i><i class="fa-solid fa-angle-right"></i><i class="fa-solid fa-angle-right"></i>
             </div>
-            <div class="contact-info">CONTACT US <span>+255 123 456 789</span></div>
+            
+            <div class="contact-info">CONTACT US <span id="contact-phone">...</span></div>
+            
             <div class="copyright">Mama mussa bakery © 2026. All rights reserved.</div>
-            <div class="social-icons">
-                <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#"><i class="fa-brands fa-twitter"></i></a>
-            </div>
+            
+            <!-- EMPTY: Awaiting Google Sheets Data -->
+            <div id="social-icons" class="social-icons"></div>
         </footer>
     </div>
 
@@ -584,6 +592,7 @@
             let htmlCards = '';
             let htmlSocials = '';
 
+            // --- MAIN BODY: Contact Cards ---
             // WhatsApp
             if (data['whatsapp'] && data['whatsapp'].length > 0) {
                 let nums = data['whatsapp'].map(n => String(n).replace(/\D/g, ''));
@@ -643,7 +652,7 @@
                     </div>`;
             }
 
-            // Socials
+            // --- MAIN BODY: Social Favicons Grid ---
             const socialPlatforms = ['instagram', 'facebook', 'x', 'snapchat', 'tiktok', 'youtube'];
             socialPlatforms.forEach(platform => {
                 if (data[platform]) {
@@ -658,7 +667,7 @@
                 }
             });
 
-            // Reveal UI
+            // Reveal UI for Main Body
             document.getElementById('loading-state').style.display = 'none';
             if (htmlCards !== '') {
                 contactsContainer.innerHTML = htmlCards;
@@ -669,6 +678,49 @@
                 document.getElementById('social-section').style.display = 'block';
             }
             document.getElementById('working-hours-card').style.display = 'block';
+
+            // ==========================================
+            // --- FOOTER DYNAMIC INJECTION ---
+            // ==========================================
+            
+            // 1. Footer Phone
+            if (data['phone'] && data['phone'].length > 0) {
+                // Ensure it formats purely as a readable number 
+                let cleanPhone = String(data['phone'][0]).replace(/\D/g, '');
+                document.getElementById('contact-phone').textContent = '+' + cleanPhone;
+            }
+
+            // 2. Footer Social Icons (SimpleIcons CDN)
+            const footerSocialContainer = document.getElementById('social-icons');
+            if (footerSocialContainer) {
+                footerSocialContainer.innerHTML = ''; // Start clean
+                
+                const footerPlatforms = [
+                    { key: 'instagram', icon: 'instagram' },
+                    { key: 'facebook', icon: 'facebook' },
+                    { key: 'x', icon: 'x' },
+                    { key: 'snapchat', icon: 'snapchat' },
+                    { key: 'pinterest', icon: 'pinterest' },
+                    { key: 'whatsapp', icon: 'whatsapp', prefix: 'https://wa.me/' },
+                    { key: 'email', icon: 'gmail', prefix: 'mailto:' } 
+                ];
+                
+                footerPlatforms.forEach(plat => {
+                    const values = data[plat.key] || [];
+                    if (values.length > 0 && values[0] !== '') {
+                        const a = document.createElement('a');
+                        a.href = plat.prefix ? plat.prefix + values[0] : values[0];
+                        a.target = "_blank";
+                        
+                        const img = document.createElement('img');
+                        img.src = `https://cdn.simpleicons.org/${plat.icon}/white`;
+                        img.alt = plat.key;
+                        
+                        a.appendChild(img);
+                        footerSocialContainer.appendChild(a);
+                    }
+                });
+            }
         }
 
         // =======================================================================
