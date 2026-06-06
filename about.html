@@ -399,6 +399,14 @@
             opacity: 0.8;
         }
 
+        /* Styling for SimpleIcons so they fit perfectly in the circle */
+        .social-icons a img {
+            width: 50%;
+            height: 50%;
+            object-fit: contain;
+            display: block;
+        }
+
         /* --- Responsive Design (Mobile & Tablet) --- */
         @media (max-width: 992px) {
             main {
@@ -493,7 +501,6 @@
             <!-- Right Side: Opening Hours Card -->
             <div class="about-hours-column">
                 <div class="hours-card">
-                    <!-- Subtle decorative elements matching the image -->
                     <div class="card-decor-circle"></div>
                     <div class="card-decor-arrows left">
                         <i class="fa-solid fa-angle-right"></i><i class="fa-solid fa-angle-right"></i><i class="fa-solid fa-angle-right"></i><i class="fa-solid fa-angle-right"></i>
@@ -520,25 +527,105 @@
             </div>
             
             <div class="contact-info">
-                CONTACT US <span>+255 123 456 789</span>
+                CONTACT US <span id="contact-phone">...</span>
             </div>
             
             <div class="copyright">
                 Mama mussa bakery © 2026. All rights reserved.
             </div>
             
-            <div class="social-icons">
-                <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#"><i class="fa-brands fa-twitter"></i></a>
-            </div>
+            <!-- EMPTY: Awaiting Google Sheets Data -->
+            <div id="social-icons" class="social-icons"></div>
         </footer>
     </div>
 
     <!-- Scripts -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Theme Switch Logic
+            
+            // --- 1. Google Sheets Integration (Footer Info Only) ---
+            const sheetUrl = 'https://docs.google.com/spreadsheets/d/1eAJe9wdwsTaGgxjOV3QZHZId8Ai1hh6fMe272dQgMp8/gviz/tq?tqx=out:csv';
+
+            // CSV Parser
+            function parseCSV(str) {
+                const arr = [];
+                let quote = false;
+                let row = 0, col = 0;
+                for (let c = 0; c < str.length; c++) {
+                    let cc = str[c], nc = str[c+1];
+                    arr[row] = arr[row] || [];
+                    arr[row][col] = arr[row][col] || '';
+                    if (cc == '"' && quote && nc == '"') { arr[row][col] += cc; ++c; continue; }
+                    if (cc == '"') { quote = !quote; continue; }
+                    if (cc == ',' && !quote) { ++col; continue; }
+                    if (cc == '\r' && nc == '\n' && !quote) { ++row; col = 0; ++c; continue; }
+                    if (cc == '\n' && !quote) { ++row; col = 0; continue; }
+                    if (cc == '\r' && !quote) { ++row; col = 0; continue; }
+                    arr[row][col] += cc;
+                }
+                return arr;
+            }
+
+            // Fetch and parse data
+            fetch(sheetUrl)
+                .then(res => res.text())
+                .then(csvText => {
+                    const rows = parseCSV(csvText);
+                    const sheetData = {};
+                    
+                    rows.forEach(cols => {
+                        if(cols.length > 0 && cols[0]) {
+                            const key = cols[0].trim().toLowerCase();
+                            const values = cols.slice(1).map(v => v ? v.trim() : '').filter(v => v !== '');
+                            if(key) sheetData[key] = values;
+                        }
+                    });
+
+                    updateUI(sheetData);
+                })
+                .catch(err => console.error("Error fetching sheet data:", err));
+
+            // Generate UI from Sheet Data
+            function updateUI(data) {
+                // A. CONTACT PHONE
+                const phones = data['phone'] || [];
+                if (phones.length > 0) {
+                    document.getElementById('contact-phone').textContent = '+' + phones[0];
+                }
+
+                // B. SOCIAL ICONS (Dynamic SimpleIcons)
+                const socialContainer = document.getElementById('social-icons');
+                socialContainer.innerHTML = ''; // Start clean
+                
+                const platforms = [
+                    { key: 'instagram', icon: 'instagram' },
+                    { key: 'facebook', icon: 'facebook' },
+                    { key: 'x', icon: 'x' },
+                    { key: 'snapchat', icon: 'snapchat' },
+                    { key: 'pinterest', icon: 'pinterest' },
+                    { key: 'whatsapp', icon: 'whatsapp', prefix: 'https://wa.me/' },
+                    { key: 'email', icon: 'gmail', prefix: 'mailto:' } 
+                ];
+                
+                platforms.forEach(plat => {
+                    const values = data[plat.key] || [];
+                    if (values.length > 0 && values[0] !== '') {
+                        const a = document.createElement('a');
+                        a.href = plat.prefix ? plat.prefix + values[0] : values[0];
+                        a.target = "_blank";
+                        
+                        // Grab proper icon from simpleicons.org CDN. Color = white
+                        const img = document.createElement('img');
+                        img.src = `https://cdn.simpleicons.org/${plat.icon}/white`;
+                        img.alt = plat.key;
+                        
+                        a.appendChild(img);
+                        socialContainer.appendChild(a);
+                    }
+                });
+            }
+
+            // --- 2. Theme Switch Logic ---
             const savedTheme = localStorage.getItem('bakery-theme') || 'light';
             const themeIcon = document.getElementById('theme-icon');
             
