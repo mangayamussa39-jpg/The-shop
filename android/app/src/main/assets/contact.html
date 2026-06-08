@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Contact Us - Mama Mussa Bakery</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jZZHQYkv/pngwing-com.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://i.ibb.co/jZZHQYkv/pngwing-com.png">
+<link rel="shortcut icon" href="https://i.ibb.co/jZZHQYkv/pngwing-com.png">
+    
+    <!-- Google Fonts (Bakery Styles) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Great+Vibes&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome (For Bakery Header/Theme) & Material Icons (For Contact JS Logic) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script defer src="screen.js"></script>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        /* --- CSS Variables & Reset --- */
+        :root {
+            /* Bakery Core */
+            --bg-color: #fdf6eb;
+            --primary-orange: #ff7b00;
+            --primary-yellow: #ffb703;
+            --text-dark: #2b2b2b;
+            --text-light: #666666;
+            --arrow-color: #dddddd;
+            
+            /* Contact Specific */
+            --chip-bg: #ffffff;
+            --faint-border: rgba(0, 0, 0, 0.1);
+            --search-border: rgba(0, 0, 0, 0.2);
+            --fav-color-hover: rgba(255, 123, 0, 0.1);
+            
+            --font-sans: 'Poppins', sans-serif;
+            --font-display: 'Bebas Neue', sans-serif;
+            --font-script: 'Great Vibes', cursive;
+        }
+
+        /* Dark Mode Variables */
+        body.dark-mode {
+            --bg-color: #1a1a1a;
+            --text-dark: #fdf6eb;
+            --text-light: #aaaaaa;
+            --arrow-color: #444444;
+            --chip-bg: #2a2a2a;
+            --faint-border: rgba(255, 255, 255, 0.1);
+            --search-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: var(--font-sans);
+            color: var(--text-dark);
+            transition: background-color 0.4s ease, color 0.4s ease;
+            min-height: 100vh;
+        }
+
+        /* Container allowing natural scrolling */
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px; 
+        }
+
+        /* --- Header (Forced Single Row) --- */
+        header {
+            flex: 0 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: clamp(10px, 3vh, 30px) 0;
+            width: 100%;
+        }
+
+        .header-logo {
+            flex: 0 0 auto;
+            height: 120px;
+            width: auto; 
+            max-width: 150px;
+            object-fit: contain;
+            cursor: pointer;
+            display: block; 
+            position: absolute;
+        }
+
+        .header-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            padding: 0 10px;
+            margin-left: 80px;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: clamp(8px, 3vw, 40px);
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 1px;
+            white-space: nowrap; 
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover, nav a.active { color: var(--primary-orange); }
+
+        .header-right {
+            flex: 0 0 auto;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            width: 48px; 
+            height: 26px; 
+            border-radius: 13px;
+            background-color: transparent;
+            border: 2px solid var(--text-dark);
+            display: inline-flex; 
+            align-items: center; 
+            padding: 2px;
+            cursor: pointer; 
+            position: relative;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover { border-color: var(--primary-orange); }
+
+        .theme-toggle-circle {
+            width: 18px; 
+            height: 18px; 
+            border-radius: 50%;
+            background-color: var(--text-dark);
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            position: absolute; 
+            left: 2px;
+            transition: left 0.3s ease, background-color 0.3s ease;
+        }
+        
+        .theme-toggle:hover .theme-toggle-circle { background-color: var(--primary-orange); }
+        body.dark-mode .theme-toggle-circle { left: calc(100% - 20px); }
+
+        .theme-toggle-circle i {
+            color: var(--bg-color);
+            font-size: 10px;
+            transition: color 0.3s ease;
+        }
+
+        /* --- Page Title Styles --- */
+        .title-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin: 40px 0 20px 0;
+            text-align: center;
+        }
+
+        .title-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5vw;
+            width: 100%;
+        }
+
+        .side-text {
+            font-size: clamp(0.7rem, 1.5vh, 1rem);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5vw;
+            letter-spacing: 2px;
+        }
+
+        .side-text::before, .side-text::after {
+            content: '';
+            display: block;
+            width: 1.5vw;
+            height: 1px;
+            background-color: var(--text-dark);
+        }
+
+        .side-text.left::before { display: none; }
+        .side-text.right::after { display: none; }
+
+        h1.main-title {
+            font-family: var(--font-display);
+            font-size: 40px;
+            color: var(--primary-orange);
+            line-height: 0.8;
+            letter-spacing: 2px;
+            margin: 0;
+        }
+
+        h2.script-title {
+            font-family: var(--font-script);
+            font-size: 36px;
+            color: var(--text-dark);
+            transform: rotate(-5deg);
+            margin-top: -1vh;
+            z-index: 2;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-size: 1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        /* --- Main Layout --- */
+        main {
+            flex: 1;
+            padding-bottom: 60px;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* --- Dynamic Cards (Left Side) --- */
+        .contact-methods { display: flex; flex-direction: column; gap: 16px; }
+        .dynamic-list { display: flex; flex-direction: column; gap: 12px; }
+        
+        .contact-card { 
+            background-color: var(--chip-bg); 
+            padding: 16px; 
+            border-radius: 12px; 
+            border: 1px solid var(--faint-border); 
+            display: flex; 
+            align-items: flex-start; 
+            gap: 16px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+        .contact-card:hover { 
+            border-color: var(--primary-orange); 
+            background-color: var(--fav-color-hover); 
+            transform: translateY(-2px);
+        }
+        
+        .contact-card-icon { 
+            height: 40px; min-width: 40px; border-radius: 50%; 
+            background-color: var(--bg-color); 
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; 
+            border: 1px solid var(--faint-border); 
+        }
+        .contact-card-icon img { width: 20px; height: 20px; object-fit: contain; border-radius: 4px; }
+        .contact-card-icon .material-icons { color: var(--text-dark); font-size: 20px; }
+        
+        .contact-card-info { display: flex; flex-direction: column; gap: 4px; width: 100%; overflow: hidden; }
+        .contact-card-title { font-size: 16px; font-weight: 600; color: var(--text-dark); }
+        .contact-card-desc { font-size: 14px; color: var(--text-light); line-height: 1.4; word-wrap: break-word; font-weight: 500;}
+
+        /* Loader */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .loader-container { padding: 40px 0; text-align: center; color: var(--text-light); display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .spinner { animation: spin 1s linear infinite; font-size: 32px; color: var(--primary-orange); }
+
+        /* Working Hours Card (Restyled to Bakery aesthetic) */
+        .working-hours { 
+            background-color: var(--chip-bg);
+            border: 1px solid var(--faint-border); 
+            border-radius: 12px; 
+            padding: 24px; 
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+        .wh-header { font-family: var(--font-display); font-size: 26px; color: var(--primary-orange); margin-bottom: 16px; letter-spacing: 1px;}
+        .wh-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed var(--faint-border); font-size: 14px; color: var(--text-light); font-weight: 500; }
+        .wh-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .wh-day { font-weight: 600; color: var(--text-dark); }
+
+        /* Socials */
+        .social-section { margin-top: 10px; padding-top: 24px; border-top: 1px solid var(--faint-border); }
+        .social-title { font-size: 14px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); }
+        .social-grid { display: flex; flex-wrap: wrap; gap: 12px; }
+        .social-btn { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background-color: var(--chip-bg); border-radius: 50%; border: 1px solid var(--faint-border); cursor: pointer; transition: 0.3s; }
+        .social-btn img { width: 20px; height: 20px; object-fit: contain; border-radius: 4px; transition: transform 0.2s;}
+        .social-btn:hover { border-color: var(--primary-orange); transform: translateY(-3px); }
+        .social-btn:hover img { transform: scale(1.1);}
+
+        /* --- Form (Right Side) --- */
+        .form-wrapper { display: flex; flex-direction: column; gap: 24px; }
+        .form-header-title { font-family: var(--font-display); font-size: 32px; color: var(--text-dark); letter-spacing: 1px; }
+        .form-header-desc { font-size: 14px; color: var(--text-light); font-weight: 500; margin-top: 6px; }
+        
+        .form-pane { display: flex; flex-direction: column; gap: 20px; }
+        .form-input { 
+            width: 100%; 
+            padding: 12px 0; 
+            border: none; 
+            border-bottom: 2px solid var(--search-border); 
+            background: transparent; 
+            color: var(--text-dark); 
+            font-size: 15px; 
+            font-family: var(--font-sans); 
+            font-weight: 500;
+            outline: none; 
+            transition: border-color 0.3s ease; 
+        }
+        .form-input:focus { border-bottom-color: var(--primary-orange); }
+        .form-input::placeholder { color: var(--text-light); opacity: 0.7; }
+        textarea.form-input { resize: vertical; min-height: 120px; }
+        
+        .submit-btn { 
+            background-color: var(--primary-orange); 
+            color: white; 
+            border: 2px solid var(--primary-orange);
+            border-radius: 30px; 
+            padding: 15px 30px; 
+            font-size: 14px; 
+            font-weight: 600; 
+            font-family: var(--font-sans); 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            letter-spacing: 1px;
+            margin-top: 10px;
+            align-self: flex-start;
+        }
+        .submit-btn:hover { background-color: transparent; color: var(--text-dark); }
+
+        /* --- Footer --- */
+        footer {
+            flex: 0 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: clamp(15px, 3vh, 20px) 0;
+            font-size: clamp(0.65rem, 1.2vh, 0.85rem);
+            color: var(--text-light);
+            border-top: 1px solid var(--faint-border);
+        }
+        .footer-arrows { color: var(--arrow-color); letter-spacing: 3px; }
+        .contact-info span { color: var(--primary-orange); font-weight: 600; margin-left: 10px; }
+        .social-icons { display: flex; gap: 1vw; }
+        .social-icons a {
+            display: flex; align-items: center; justify-content: center;
+            width: clamp(25px, 4vh, 35px); height: clamp(25px, 4vh, 35px);
+            background-color: var(--primary-orange); color: white;
+            border-radius: 50%; text-decoration: none; transition: opacity 0.3s ease;
+        }
+        .social-icons a:hover { opacity: 0.8; }
+        
+        /* Styling for Footer SimpleIcons so they fit perfectly in the circle */
+        .social-icons a img {
+            width: 50%;
+            height: 50%;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* --- Modals --- */
+        #modal-backdrop { position: fixed; inset: 0; z-index: 999; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); display: none; }
+        body:not(.dark-mode) #modal-backdrop { background-color: rgba(0, 0, 0, 0.2); }
+        #modal-backdrop.active { display: block; }
+
+        .center-modal-wrapper { position: fixed; inset: 0; z-index: 1100; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .center-modal-wrapper.active { display: flex; }
+        .center-modal { background-color: var(--chip-bg); border: 1px solid var(--faint-border); border-radius: 16px; width: 100%; max-width: 360px; padding: 20px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
+        .center-modal-header { display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: 700; color: var(--text-dark); }
+        .center-modal-header .close-icon { cursor: pointer; color: var(--text-light); transition: 0.3s; }
+        .center-modal-header .close-icon:hover { color: var(--primary-orange); }
+        .popup-list { display: flex; flex-direction: column; gap: 8px; }
+        .popup-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; background-color: var(--bg-color); cursor: pointer; transition: 0.3s; border: 1px solid var(--faint-border); }
+        .popup-item:hover { border-color: var(--primary-orange); background-color: var(--fav-color-hover); }
+        .popup-item-icon { width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; }
+        .popup-item-icon img { max-width: 100%; max-height: 100%; border-radius: 4px; }
+        .popup-item-text { font-size: 14px; font-weight: 500; color: var(--text-dark); word-break: break-all;}
+
+        #custom-toast { position: fixed; bottom: -60px; left: 50%; transform: translateX(-50%); background-color: var(--text-dark); color: var(--bg-color); padding: 12px 24px; border-radius: 30px; font-size: 14px; font-weight: 600; z-index: 3000; opacity: 0; transition: bottom 0.3s ease, opacity 0.3s ease; pointer-events: none; }
+        #custom-toast.show { bottom: 30px; opacity: 1; }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+            footer { flex-wrap: wrap; justify-content: center; gap: 1vh; text-align: center; }
+            .footer-arrows { display: none; }
+            .copyright { width: 100%; order: 3; }
+            .submit-btn { width: 100%; }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 0 20px; }
+            .side-text::before, .side-text::after { width: 10px; } 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Main Header -->
+        <header>
+            <img src="https://i.ibb.co/jZZHQYkv/pngwing-com.png" alt="Logo" class="header-logo" onclick="window.location.href='index.html'">
+            
+            <div class="header-center">
+                <nav>
+                    <a href="index.html">HOME</a>
+                    <a href="shop.html">SHOP</a>
+                    <a href="about.html">ABOUT</a>
+                    <a href="contact.html" class="active">CONTACT</a>
+                </nav>
+            </div>
+
+            <div class="header-right">
+                <div id="theme-switch" class="theme-toggle">
+                    <div class="theme-toggle-circle"><i class="fa-solid fa-moon" id="theme-icon"></i></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Fancy Title Section -->
+            <div class="title-container">
+                <div class="title-top-row">
+                    <span class="side-text left">TALK TO</span>
+                    <h1 class="main-title">MAMA MUSSA BAKERY</h1>
+                    <span class="side-text right">TODAY</span>
+                </div>
+                <h2 class="script-title">Contact</h2>
+            </div>
+            
+            <p class="page-subtitle">Have a question about our baked goods, custom orders, or shipping? Send us a message or reach out through one of the channels below.</p>
+
+            <div class="contact-grid">
+                
+                <!-- LEFT: Contacts & Socials -->
+                <div class="contact-methods">
+                    
+                    <div id="loading-state" class="loader-container">
+                        <span class="material-icons spinner">autorenew</span>
+                        <p>Loading contact details...</p>
+                    </div>
+
+                    <!-- Dynamic injected cards go here -->
+                    <div id="dynamic-contacts-container" class="dynamic-list" style="display: none;"></div>
+
+                    <!-- Working Hours -->
+                    <div class="working-hours" id="working-hours-card" style="display: none;">
+                        <div class="wh-header">BUSINESS HOURS</div>
+                        <div class="wh-row"><span class="wh-day">Mon - Fri</span><span>8:00 AM - 6:00 PM</span></div>
+                        <div class="wh-row"><span class="wh-day">Saturday</span><span>9:00 AM - 4:00 PM</span></div>
+                        <div class="wh-row"><span class="wh-day">Sunday</span><span>Closed</span></div>
+                    </div>
+
+                    <!-- Socials -->
+                    <div class="social-section" id="social-section" style="display: none;">
+                        <div class="social-title">Connect via</div>
+                        <div class="social-grid" id="dynamic-social-grid"></div>
+                    </div>
+
+                </div>
+
+                <!-- RIGHT: Form -->
+                <div class="form-wrapper">
+                    <div>
+                        <h2 class="form-header-title">SEND AN EMAIL</h2>
+                        <p class="form-header-desc">Fill out the details below and we'll route it directly to your email app.</p>
+                    </div>
+                    
+                    <form id="contact-form" class="form-pane" onsubmit="handleFormSubmit(event)">
+                        <div class="form-group"><input type="text" class="form-input" id="form-name" placeholder="Full Name" required></div>
+                        <div class="form-group"><input type="email" class="form-input" id="form-email" placeholder="Your Email Address" required></div>
+                        <div class="form-group"><input type="text" class="form-input" id="form-order" placeholder="Order Number (Optional)"></div>
+                        <div class="form-group"><textarea class="form-input" id="form-msg" placeholder="Your Message" required></textarea></div>
+                        <button type="submit" class="submit-btn">SEND EMAIL</button>
+                    </form>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-arrows">
+                <i class="fa-solid fa-angle-right"></i><i class="fa-solid fa-angle-right"></i><i class="fa-solid fa-angle-right"></i><i class="fa-solid fa-angle-right"></i><i class="fa-solid fa-angle-right"></i>
+            </div>
+            
+            <div class="contact-info">CONTACT<span id="contact-phone">...</span></div>
+            
+            <div class="copyright">Mama mussa bakery © 2026. All rights reserved.</div>
+            
+            <!-- EMPTY: Awaiting Google Sheets Data -->
+            <div id="social-icons" class="social-icons"></div>
+        </footer>
+    </div>
+
+    <!-- SELECTION POPUP MODAL -->
+    <div id="modal-backdrop" onclick="closeActionPopup()"></div>
+    <div id="action-modal" class="center-modal-wrapper" onclick="closeActionPopup()">
+        <div class="center-modal" onclick="event.stopPropagation()">
+            <div class="center-modal-header">
+                <span id="popup-title">Choose Contact</span>
+                <span class="material-icons close-icon" onclick="closeActionPopup()">close</span>
+            </div>
+            <div id="popup-list" class="popup-list">
+                <!-- Buttons injected dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-toast">Action failed!</div>
+
+    <!-- Scripts (Functionality Preserved, Theme Logic Merged) -->
+    <script>
+        const SHEET_ID = "1eAJe9wdwsTaGgxjOV3QZHZId8Ai1hh6fMe272dQgMp8"; 
+        window.fetchedEmails = []; 
+        window.pendingFormPayload = ""; 
+
+        // =======================================================================
+        // CSV FETCH
+        // =======================================================================
+        async function fetchContactsData() {
+            try {
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`);
+                const text = await res.text();
+                
+                const rows = text.split('\n');
+                const contactsObj = {};
+
+                rows.forEach(rowLine => {
+                    if (!rowLine.trim()) return;
+                    
+                    const cols = [];
+                    let currentVal = '';
+                    let inQuotes = false;
+                    for(let i=0; i<rowLine.length; i++) {
+                        let char = rowLine[i];
+                        if(char === '"') inQuotes = !inQuotes;
+                        else if(char === ',' && !inQuotes) { cols.push(currentVal.trim()); currentVal = ''; }
+                        else currentVal += char;
+                    }
+                    cols.push(currentVal.trim());
+
+                    if (cols.length > 0 && cols[0]) {
+                        const platformName = cols[0].replace(/^"|"$/g, '').toLowerCase().trim();
+                        contactsObj[platformName] = [];
+                        
+                        for(let i = 1; i < cols.length; i++) {
+                            const val = cols[i].replace(/^"|"$/g, '').trim();
+                            if (val) contactsObj[platformName].push(val);
+                        }
+                    }
+                });
+
+                if (contactsObj['email'] && contactsObj['email'].length > 0) {
+                    window.fetchedEmails = contactsObj['email'];
+                }
+
+                renderContacts(contactsObj);
+            } catch (err) {
+                console.error("Error fetching data from Google Sheets.", err);
+                document.getElementById('loading-state').innerHTML = '<p style="color:var(--primary-orange)">Failed to load contacts. Please refresh.</p>';
+            }
+        }
+
+        // =======================================================================
+        // PURE DYNAMIC RENDERER
+        // =======================================================================
+        function renderContacts(data) {
+            const contactsContainer = document.getElementById('dynamic-contacts-container');
+            const socialGrid = document.getElementById('dynamic-social-grid');
+            let htmlCards = '';
+            let htmlSocials = '';
+
+            // --- MAIN BODY: Contact Cards ---
+            // WhatsApp
+            if (data['whatsapp'] && data['whatsapp'].length > 0) {
+                let nums = data['whatsapp'].map(n => String(n).replace(/\D/g, ''));
+                let displayNums = nums.map(n => '+' + n).join('<br>');
+                let action = nums.length === 1 ? `openAction('whatsapp', '${nums[0]}')` : `openPopup('whatsapp', '${nums.join(',')}')`;
+                
+                htmlCards += `
+                    <div class="contact-card" onclick="${action}">
+                        <div class="contact-card-icon single"><img src="https://www.google.com/s2/favicons?domain=whatsapp.com&sz=128" alt="WhatsApp"></div>
+                        <div class="contact-card-info">
+                            <span class="contact-card-title">WhatsApp</span>
+                            <span class="contact-card-desc">${displayNums}</span>
+                        </div>
+                    </div>`;
+            }
+
+            // Phone
+            if (data['phone'] && data['phone'].length > 0) {
+                let nums = data['phone'].map(n => String(n).replace(/\D/g, ''));
+                let displayNums = nums.map(n => '+' + n).join('<br>');
+                let action = nums.length === 1 ? `openAction('phone', '${nums[0]}')` : `openPopup('phone', '${nums.join(',')}')`;
+                
+                htmlCards += `
+                    <div class="contact-card" onclick="${action}">
+                        <div class="contact-card-icon single"><span class="material-icons">call</span></div>
+                        <div class="contact-card-info">
+                            <span class="contact-card-title">Phone Call</span>
+                            <span class="contact-card-desc">${displayNums}</span>
+                        </div>
+                    </div>`;
+            }
+
+            // Email
+            if (data['email'] && data['email'].length > 0) {
+                let emails = data['email'];
+                let action = emails.length === 1 ? `openAction('email', '${emails[0]}')` : `openPopup('email', '${emails.join(',')}')`;
+                
+                let displayEmailsHtml = emails.map(e => {
+                    let extractedDomain = e.split('@')[1] || 'google.com';
+                    return `
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <img src="https://www.google.com/s2/favicons?domain=${extractedDomain}&sz=128" style="width: 16px; height: 16px; border-radius: 2px; object-fit: contain;" alt="">
+                            <span style="word-break: break-all;">${e}</span>
+                        </div>
+                    `;
+                }).join('');
+                
+                htmlCards += `
+                    <div class="contact-card" onclick="${action}">
+                        <div class="contact-card-icon single"><span class="material-icons">mail</span></div>
+                        <div class="contact-card-info">
+                            <span class="contact-card-title">Email</span>
+                            <div class="contact-card-desc" style="display: flex; flex-direction: column; gap: 6px; margin-top: 4px;">
+                                ${displayEmailsHtml}
+                            </div>
+                        </div>
+                    </div>`;
+            }
+
+            // --- MAIN BODY: Social Favicons Grid ---
+            const socialPlatforms = ['instagram', 'facebook', 'x', 'snapchat', 'tiktok', 'youtube'];
+            socialPlatforms.forEach(platform => {
+                if (data[platform]) {
+                    data[platform].forEach(link => {
+                        let domain = 'google.com';
+                        try { domain = new URL(link).hostname.replace('www.', ''); } catch(e){}
+                        htmlSocials += `
+                            <a href="${link}" target="_blank" class="social-btn" title="${platform}">
+                                <img src="https://www.google.com/s2/favicons?domain=${domain}&sz=128" alt="${platform}">
+                            </a>`;
+                    });
+                }
+            });
+
+            // Reveal UI for Main Body
+            document.getElementById('loading-state').style.display = 'none';
+            if (htmlCards !== '') {
+                contactsContainer.innerHTML = htmlCards;
+                contactsContainer.style.display = 'flex';
+            }
+            if (htmlSocials !== '') {
+                socialGrid.innerHTML = htmlSocials;
+                document.getElementById('social-section').style.display = 'block';
+            }
+            document.getElementById('working-hours-card').style.display = 'block';
+
+            // ==========================================
+            // --- FOOTER DYNAMIC INJECTION ---
+            // ==========================================
+            
+            // 1. Footer Phone
+            if (data['phone'] && data['phone'].length > 0) {
+                // Ensure it formats purely as a readable number 
+                let cleanPhone = String(data['phone'][0]).replace(/\D/g, '');
+                document.getElementById('contact-phone').textContent = '+' + cleanPhone;
+            }
+
+            // 2. Footer Social Icons (SimpleIcons CDN)
+            const footerSocialContainer = document.getElementById('social-icons');
+            if (footerSocialContainer) {
+                footerSocialContainer.innerHTML = ''; // Start clean
+                
+                const footerPlatforms = [
+                    { key: 'instagram', icon: 'instagram' },
+                    { key: 'facebook', icon: 'facebook' },
+                    { key: 'x', icon: 'x' },
+                    { key: 'snapchat', icon: 'snapchat' },
+                    { key: 'pinterest', icon: 'pinterest' },
+                    { key: 'whatsapp', icon: 'whatsapp', prefix: 'https://wa.me/' },
+                    { key: 'email', icon: 'gmail', prefix: 'mailto:' } 
+                ];
+                
+                footerPlatforms.forEach(plat => {
+                    const values = data[plat.key] || [];
+                    if (values.length > 0 && values[0] !== '') {
+                        const a = document.createElement('a');
+                        a.href = plat.prefix ? plat.prefix + values[0] : values[0];
+                        a.target = "_blank";
+                        
+                        const img = document.createElement('img');
+                        img.src = `https://cdn.simpleicons.org/${plat.icon}/white`;
+                        img.alt = plat.key;
+                        
+                        a.appendChild(img);
+                        footerSocialContainer.appendChild(a);
+                    }
+                });
+            }
+        }
+
+        // =======================================================================
+        // REAL EMAIL FORM & ACTION LOGIC
+        // =======================================================================
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('form-name').value;
+            const sender = document.getElementById('form-email').value;
+            const order = document.getElementById('form-order').value;
+            const msg = document.getElementById('form-msg').value;
+
+            const subject = encodeURIComponent(`New Inquiry from ${name}`);
+            const bodyText = `Name: ${name}\r\nEmail: ${sender}\r\nOrder Number: ${order || 'N/A'}\r\n\r\nMessage:\r\n${msg}`;
+            const body = encodeURIComponent(bodyText);
+
+            window.pendingFormPayload = `subject=${subject}&body=${body}`;
+
+            if (window.fetchedEmails.length === 1) {
+                window.location.href = `mailto:${window.fetchedEmails[0]}?${window.pendingFormPayload}`;
+                document.getElementById('contact-form').reset();
+            } else if (window.fetchedEmails.length > 1) {
+                openPopup('form_email', window.fetchedEmails.join(','));
+            } else {
+                showToast("No destination email found.");
+            }
+        }
+
+        function openAction(type, value) {
+            if (type === 'whatsapp') window.open(`https://wa.me/${value}?text=Hello Mama Mussa Bakery`, '_blank');
+            else if (type === 'phone') window.location.href = `tel:+${value}`;
+            else if (type === 'email') window.location.href = `mailto:${value}`;
+        }
+
+        function openPopup(type, valuesStr) {
+            const values = valuesStr.split(',');
+            const popup = document.getElementById('action-modal');
+            const title = document.getElementById('popup-title');
+            const list = document.getElementById('popup-list');
+            
+            list.innerHTML = '';
+            document.getElementById('modal-backdrop').classList.add('active');
+
+            if (type === 'whatsapp') title.textContent = 'Choose WhatsApp';
+            else if (type === 'phone') title.textContent = 'Choose Phone Number';
+            else if (type === 'email') title.textContent = 'Choose Email';
+            else if (type === 'form_email') title.textContent = 'Choose Receiving Email';
+
+            values.forEach(val => {
+                let iconHtml = '';
+                let displayVal = val;
+                
+                if (type === 'whatsapp') {
+                    iconHtml = `<img src="https://www.google.com/s2/favicons?domain=whatsapp.com&sz=128" alt="wa">`;
+                    displayVal = '+' + val;
+                } else if (type === 'phone') {
+                    iconHtml = `<span class="material-icons">call</span>`;
+                    displayVal = '+' + val;
+                } else if (type === 'email' || type === 'form_email') {
+                    let extractedDomain = val.split('@')[1] || 'google.com';
+                    iconHtml = `<img src="https://www.google.com/s2/favicons?domain=${extractedDomain}&sz=128" alt="Email">`;
+                }
+
+                const item = document.createElement('div');
+                item.className = 'popup-item';
+                item.innerHTML = `<div class="popup-item-icon">${iconHtml}</div><div class="popup-item-text">${displayVal}</div>`;
+                
+                item.onclick = () => {
+                    if (type === 'form_email') {
+                        window.location.href = `mailto:${val}?${window.pendingFormPayload}`;
+                        document.getElementById('contact-form').reset();
+                    } else {
+                        openAction(type, val);
+                    }
+                    closeActionPopup();
+                };
+                list.appendChild(item);
+            });
+
+            popup.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeActionPopup() {
+            document.getElementById('action-modal').classList.remove('active');
+            document.getElementById('modal-backdrop').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        let toastTimer;
+        function showToast(msg) {
+            const toast = document.getElementById('custom-toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        // =======================================================================
+        // THEME LOGIC
+        // =======================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('bakery-theme') || 'light';
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            }
+
+            document.getElementById('theme-switch').addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                
+                if (isDark) {
+                    themeIcon.classList.replace('fa-moon', 'fa-sun');
+                    localStorage.setItem('bakery-theme', 'dark');
+                } else {
+                    themeIcon.classList.replace('fa-sun', 'fa-moon');
+                    localStorage.setItem('bakery-theme', 'light');
+                }
+            });
+            
+            // Initialize Fetch
+            fetchContactsData();
+        });
+    </script>
+    
+
+</body>
+</html>
