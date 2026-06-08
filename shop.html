@@ -476,7 +476,7 @@
         <div class="product-container" id="product-container">
             <div class="empty-state">
                 <span class="material-icons empty-icon">cloud_download</span>
-                <div class="empty-text">Loading fresh bakes...</div>
+                <div class="empty-text">Loading...</div>
             </div>
         </div>
         <div id="pagination-wrapper" class="pagination-wrapper"></div>
@@ -876,7 +876,7 @@
             products = await fetchProductsFromSheet();
             
             if (products.length === 0) {
-                document.getElementById('product-container').innerHTML = `<div class="empty-state"><span class="material-icons empty-icon">error_outline</span><div class="empty-text">Failed to load data. Make sure sheet is public.</div></div>`;
+                document.getElementById('product-container').innerHTML = `<div class="empty-state"><span class="material-icons empty-icon">error_outline</span><div class="empty-text">Error 404</div></div>`;
                 return;
             }
 
@@ -1091,7 +1091,7 @@
             }
 
             if(filtered.length === 0) {
-                 pContainer.innerHTML = `<div class="empty-state"><span class="material-icons empty-icon">sentiment_dissatisfied</span><div class="empty-text">No products found</div></div>`;
+                 pContainer.innerHTML = `<div class="empty-state"><span class="material-icons empty-icon">cloud_download</span><div class="empty-text">Loading... </div></div>`;
                  pagWrapper.classList.remove('active'); return;
             }
 
