@@ -774,22 +774,30 @@
 
         async function fetchPhoneNumber() {
             if (!PHONE_SHEET_ID) return; 
-            const url = `https://docs.google.com/spreadsheets/d/${PHONE_SHEET_ID}/gviz/tq?tqx=out:json&sheet=number`;
+            
+            // 1. Added &range=B3&headers=0 to strictly fetch ONLY cell B3
+            // Note: Make sure the sheet name is actually "number". If it's "Sheet1", change it accordingly.
+            const url = `https://docs.google.com/spreadsheets/d/${PHONE_SHEET_ID}/gviz/tq?tqx=out:json&sheet=number&range=B3&headers=0`;
+            
             try {
                 const response = await fetch(url);
                 const text = await response.text();
                 const jsonString = text.match(/google\.visualization\.Query\.setResponse\(([\s\S\w]+)\);/)[1];
                 const data = JSON.parse(jsonString);
                 
-                if (data && data.table && data.table.rows && data.table.rows[2]) {
-                    const cell = data.table.rows[2].c;
-                    if (cell && cell[1] && cell[1].v) {
-                        orderPhoneNumber = String(cell[1].v).replace(/\D/g, ''); 
+                // 2. Because we only requested B3, it will be exactly at row 0, column 0
+                if (data && data.table && data.table.rows && data.table.rows.length > 0) {
+                    const cell = data.table.rows[0].c[0];
+                    if (cell && cell.v) {
+                        // Strips all non-numeric characters (so +255 123 456 becomes 255123456 for wa.me)
+                        orderPhoneNumber = String(cell.v).replace(/\D/g, ''); 
+                        console.log("Phone number fetched successfully:", orderPhoneNumber);
                     }
                 }
             } catch (err) {
                 console.error("Phone Fetch Error:", err);
             }
+        
         }
 
         async function fetchProductsFromSheet() {
