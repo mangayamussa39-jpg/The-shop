@@ -784,7 +784,7 @@
                 if (data && data.table && data.table.rows && data.table.rows[2]) {
                     const cell = data.table.rows[2].c;
                     if (cell && cell[1] && cell[1].v) {
-                        orderPhoneNumber = String(cell[0].v).replace(/\D/g, ''); 
+                        orderPhoneNumber = String(cell[1].v).replace(/\D/g, ''); 
                     }
                 }
             } catch (err) {
