@@ -750,9 +750,17 @@
             if (inOl) parsedLines.push('</ol>');
             
             let finalHtml = parsedLines.join('\n');
+            
+            // Handle double symbols (Markdown style like **bold**)
+            finalHtml = finalHtml.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            finalHtml = finalHtml.replace(/__(.*?)__/g, '<em>$1</em>');
+            finalHtml = finalHtml.replace(/~~(.*?)~~/g, '<del>$1</del>');
+            
+            // Handle single symbols (WhatsApp style like *bold*)
             finalHtml = finalHtml.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
             finalHtml = finalHtml.replace(/_(.*?)_/g, '<em>$1</em>');
             finalHtml = finalHtml.replace(/~(.*?)~/g, '<del>$1</del>');
+            
             finalHtml = finalHtml.replace(/`(.*?)`/g, '<code>$1</code>');
             
             return finalHtml.replace(/(<br>\n?)+$/g, '');
