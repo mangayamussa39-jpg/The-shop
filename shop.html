@@ -73,7 +73,8 @@
 
         @media (max-width: 767px) { body.modal-open { overflow: hidden; } }
 
-        .material-icons { font-size: 28px; opacity: 0.7; color: var(--text-main); transition: opacity 0.2s; }
+        /* ADDED: cursor: pointer for universal icons */
+        .material-icons { font-size: 28px; opacity: 0.7; color: var(--text-main); transition: opacity 0.2s; cursor: pointer; }
         .material-icons:hover, .material-icons.active { opacity: 1; }
 
         /* ==========================================================================
@@ -135,7 +136,8 @@
         .theme-toggle-circle { width: 18px; height: 18px; border-radius: 50%; background-color: var(--text-main); display: flex; justify-content: center; align-items: center; position: absolute; left: 2px; transition: left 0.3s ease, background-color 0.3s ease; }
         .theme-toggle:hover .theme-toggle-circle { background-color: var(--fav-color); }
         body.dark-mode .theme-toggle-circle { left: calc(100% - 20px); }
-        .theme-toggle-circle i { color: var(--bg-color); font-size: 10px; transition: color 0.3s ease; }
+        /* ADDED: cursor: pointer for theme icon */
+        .theme-toggle-circle i { color: var(--bg-color); font-size: 10px; transition: color 0.3s ease; cursor: pointer; }
 
         /* ==========================================================================
            CHIPS & FILTERS (Inside smart-header)
@@ -226,7 +228,8 @@
         .page-num-input::-webkit-outer-spin-button, .page-num-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
         .empty-state { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50vh; color: var(--text-sub); opacity: 0.5; text-align: center; }
-        .empty-icon { font-size: 60px !important; margin-bottom: 16px; color: inherit; }
+        /* ADDED: cursor default for empty state so it doesn't look clickable */
+        .empty-icon { font-size: 60px !important; margin-bottom: 16px; color: inherit; cursor: default !important; }
         .empty-text { font-size: 16px; font-weight: 500; }
 
         /* ==========================================================================
@@ -751,12 +754,12 @@
             
             let finalHtml = parsedLines.join('\n');
             
-            // Handle double symbols (Markdown style like **bold**)
+            // UPDATED: Support for Double symbols (Markdown)
             finalHtml = finalHtml.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             finalHtml = finalHtml.replace(/__(.*?)__/g, '<em>$1</em>');
             finalHtml = finalHtml.replace(/~~(.*?)~~/g, '<del>$1</del>');
             
-            // Handle single symbols (WhatsApp style like *bold*)
+            // Single symbols (WhatsApp)
             finalHtml = finalHtml.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
             finalHtml = finalHtml.replace(/_(.*?)_/g, '<em>$1</em>');
             finalHtml = finalHtml.replace(/~(.*?)~/g, '<del>$1</del>');
@@ -771,6 +774,31 @@
             let stripped = text.replace(/[*_~`]/g, '');
             stripped = stripped.replace(/^>\s*/gm, '');
             return stripped;
+        }
+
+        // ADDED: Special inline formatter for List View
+        function formatInlineStyle(text) {
+            if (!text) return '';
+            let html = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            
+            // Replace newlines with spaces so it flows nicely in clamped lines
+            html = html.replace(/\n/g, ' ');
+            
+            // Double symbols
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/__(.*?)__/g, '<em>$1</em>');
+            html = html.replace(/~~(.*?)~~/g, '<del>$1</del>');
+            
+            // Single symbols
+            html = html.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+            html = html.replace(/_(.*?)_/g, '<em>$1</em>');
+            html = html.replace(/~(.*?)~/g, '<del>$1</del>');
+            html = html.replace(/`(.*?)`/g, '<code>$1</code>');
+            
+            // Remove markdown list chars that might just be floating
+            html = html.replace(/[-*]\s+/g, '');
+            
+            return html;
         }
 
         function parseSheetNumber(val) {
@@ -1045,6 +1073,7 @@
                 discountHtml = `<div class="discount-label">${p.discountPct}% OFF</div>`;
             }
             
+            // UPDATED: Use formatInlineStyle instead of stripWhatsAppStyle
             return `
             <div class="product-card" onclick="openPDP('${p.id}')">
                 <div class="product-image-wrapper">
@@ -1053,7 +1082,7 @@
                 </div>
                 <div class="product-info">
                     <div class="product-title">${p.title}</div>
-                    <div class="product-description-list">${stripWhatsAppStyle(p.description)}</div>
+                    <div class="product-description-list">${formatInlineStyle(p.description)}</div>
                     <div class="product-price">
                         <div class="price-group">
                             ${tzsOldPrice ? `<span class="old-price">TZS ${tzsOldPrice}</span>` : ''}
