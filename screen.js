@@ -10,7 +10,7 @@ function updateViewport() {
     
     // If it's desktop, tablet, or mobile landscape, enforce 1100px
     if (isDesktop || isLandscape) {
-        viewportContent = "width=1100";
+        viewportContent = "width=1500";
     } else {
         // Otherwise (mobile portrait), enforce 550px
         viewportContent = "width=550";
